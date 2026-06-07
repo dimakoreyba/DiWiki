@@ -52,6 +52,18 @@ def any_page(request):
         articles_result.append({'title' : any_article.title, 'id' : any_article.id})
     
     return JsonResponse(articles_result, safe=False)
+def edit_article(request, id):
+    article = Article.objects.get(id=id)
+
+    if request.method == "POST":
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            
+    else:
+        form = ArticleForm(instance=article)
+
+    return render(request, "new_article.html", {"form": form})
 def convert_links(text: str) -> str:
     pattern = r"\[\[([^|\]]+)\|([^\]]+)\]\]"
 

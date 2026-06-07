@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <a href="{% url 'edit_article' article.id %}">Edit</a>
     <div class="page-layout">
         <div class="left-rail">
             <a class="logo" href="/">
@@ -19,6 +20,7 @@
                 {% for section in sections %}
                 <a href="#section-{{ section.id }}">{{ section.title }}</a>
                 {% endfor %}
+                
             </aside>
         </div>
 

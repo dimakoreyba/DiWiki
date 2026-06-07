@@ -25,5 +25,6 @@ urlpatterns = [
     path('article/<int:id>/', views.article_page),
     path('article/new/', views.new_article_page ), 
     path('articles/all/', views.all_article_page),
-    path('article/by-name', views.any_page)
+    path('article/by-name', views.any_page),
+    path("article/<int:id>/edit/", views.edit_article, name="edit_article"),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)#

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'articlestyle.css' %}">
+</head>
+
+<body>
+    <div class="page-layout">
+        <div class="left-rail">
+            <a class="logo" href="/">
+                <img src="{% static 'logo.png' %}" alt="Home">
+            </a>
+            <aside class="sections-container">
+                {% for section in sections %}
+                <a href="#section-{{ section.id }}">{{ section.title }}</a>
+                {% endfor %}
+            </aside>
+        </div>
+
+        <main class="article-container">
+            <h1>{{ article.title }}</h1>
+
+            <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
+
+            <p>{{ article.description|safe}}</p>
+
+            {% for section in sections %}
+            <h2 id="section-{{ section.id }}">{{ section.title }}</h2>
+            <p>{{ section.text|safe }}</p>
+            {% endfor %}
+        </main>
+    </div>
+</body>
+
+</html>

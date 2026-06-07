@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'newarticlestyle.css' %}">
+</head>
+
+<body>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+        {{ sections.management_form }}
+        {{ image_form.as_p }}
+
+        <div id="sections-container">
+
+            {% for section in sections %}
+            <div class="section-form">
+                <div class="section-header">
+                    <h2>Section</h2>
+
+                    <button type="button" class="delete-section-btn">
+                        Delete
+                    </button>
+                </div>
+
+                {% for field in section %}
+                {% if field.name != 'DELETE' and field.name != 'id' and field.name != 'article' %}
+                {{ field.label_tag }}
+                {{ field }}
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <button type="button" id="add-section-btn">
+            + Add Section
+        </button>
+
+        <button type="submit">
+            Submit
+        </button>
+    </form>
+
+    <script>
+        const addButton = document.getElementById("add-section-btn");
+        const container = document.getElementById("sections-container");
+
+        function updateDeleteButtons() {
+
+            const deleteButtons = document.querySelectorAll(".delete-section-btn");
+
+            deleteButtons.forEach(button => {
+
+                button.onclick = () => {
+
+                    const forms = document.querySelectorAll(".section-form");
+
+                    // prevent deleting the last remaining form
+                    if (forms.length === 1) {
+                        return;
+                    }
+
+                    button.closest(".section-form").remove();
+
+                    updateFormIndexes();
+                };
+            });
+        }
+
+        function updateFormIndexes() {
+
+            const forms = document.querySelectorAll(".section-form");
+
+            const totalForms = document.getElementById("id_sections-TOTAL_FORMS");
+
+            forms.forEach((form, index) => {
+
+                const fields = form.querySelectorAll("input, textarea, select, label");
+
+                fields.forEach(field => {
+
+                    if (field.name) {
+                        field.name = field.name.replace(/sections-\d+-/g, `sections-${index}-`);
+                    }
+
+                    if (field.id) {
+                        field.id = field.id.replace(/sections-\d+-/g, `sections-${index}-`);
+                    }
+
+                    if (field.htmlFor) {
+                        field.htmlFor = field.htmlFor.replace(/sections-\d+-/g, `sections-${index}-`);
+                    }
+                });
+            });
+
+            totalForms.value = forms.length;
+        }
+
+        addButton.addEventListener("click", () => {
+
+            const totalForms = document.getElementById("id_sections-TOTAL_FORMS");
+
+            const currentFormCount = parseInt(totalForms.value);
+
+            const firstForm = document.querySelector(".section-form");
+
+            const newForm = firstForm.cloneNode(true);
+
+            newForm.innerHTML = newForm.innerHTML.replaceAll(
+                `sections-0-`,
+                `sections-${currentFormCount}-`
+            );
+
+            const inputs = newForm.querySelectorAll("input, textarea");
+
+            inputs.forEach(input => {
+                input.value = "";
+            });
+
+            container.appendChild(newForm);
+
+            totalForms.value = currentFormCount + 1;
+
+            updateDeleteButtons();
+        });
+
+        updateDeleteButtons();
+    </script>
+</body>
+
+</html>

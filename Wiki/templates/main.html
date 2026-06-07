@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'mainstyle.css' %}">
+
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="logo">DiWiki</h1>
+
+        <div class="actions">
+            <a class="action-button" href="/article/new" id="addBtn">Add Article</a>
+            <button id="editBtn">Change Article</button>
+            <a class="action-button" href="/articles/all" id="allBtn">ALL Articles</a>
+        </div>
+
+        <div class="intro">
+            <h2>Welcome</h2>
+            <p>This is your modern wiki homepage.</p>
+        </div>
+
+        <div class="card-grid">
+            {% for article in articles %}
+            <div class="card">
+                <a href="/article/{{ article.id }}">
+                        <div class="card-content">
+                            <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
+                            <h3>{{ article.title }}</h3>
+                            <p>{{ article.short_description }}</p>
+                            <p> &#x1F440; Views: {{ article.views }}</p>
+                        </div>
+                        </a>
+                        </div>
+                    {% endfor %}
+            </div>
+        </div>
+        
+</body>
+
+</html>

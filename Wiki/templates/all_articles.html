@@ -1,54 +1,47 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'articleall.css' %}">
-</head>
 
-<body>
-    <div class="container">
-        <a class="logo" href="/">
-                <img src="{% static 'logo.png' %}" alt="Home">
-        </a>
-        <h1 class="logo">DiWiki ALL</h1>
-        <div class="card-grid">
-            {% for article in page_obj %}
-            <div class="card">
-                <a href="/article/{{ article.id }}">
-                        <div class="card-content">
-                            <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
-                            <h3>{{ article.title }}</h3>
-                            
-                            <p>{{ article.short_description }}</p>
-                            <p> &#x1F440; Views: {{ article.views }}</p>
-                        </div>
-                        </a>
-                        </div>
-                    {% endfor %}
-            </div>
-        </div>    
-<div style="text-align:center; margin:20px;">
+{% block title %}All Articles — DiWiki{% endblock %}
+{% block nav_all %}site-nav__link--active{% endblock %}
+{% block body_class %}list-page{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/list.css' %}">
+{% endblock %}
 
-    {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">
-            ⬅ 
-        </a>
-    {% endif %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-header__title">All Articles</h1>
+        <p class="page-header__subtitle">Browse the full collection of wiki articles.</p>
+    </header>
 
-    <span style="margin:0 15px;">
-        Сторінка {{ page_obj.number }}
-        з {{ page_obj.paginator.num_pages }}
-    </span>
+    <div class="card-grid">
+        {% for article in page_obj %}
+        <div class="card">
+            <a href="/article/{{ article.id }}/">
+                <div class="card-content">
+                    <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.short_description }}</p>
+                    <p>&#x1F440; Views: {{ article.views }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
 
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">
-             ➡
-        </a>
-    {% endif %}
+    <nav class="pagination" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+        <a class="pagination__link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous page">&#8592;</a>
+        {% endif %}
 
+        <span class="pagination__info">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a class="pagination__link" href="?page={{ page_obj.next_page_number }}" aria-label="Next page">&#8594;</a>
+        {% endif %}
+    </nav>
 </div>
-</body>
-</html>
+{% endblock %}

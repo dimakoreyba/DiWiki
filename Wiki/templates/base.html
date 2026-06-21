@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DiWiki{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a class="site-brand" href="/">
+                <img class="site-brand__icon" src="{% static 'logo.svg' %}" alt="">
+                <span class="site-brand__text">DiWiki</span>
+            </a>
+            <nav class="site-nav" aria-label="Main navigation">
+                <a class="site-nav__link {% block nav_home %}{% endblock %}" href="/">Home</a>
+                <a class="site-nav__link {% block nav_all %}{% endblock %}" href="/articles/all/">All Articles</a>
+                <a class="site-nav__link {% block nav_new %}{% endblock %}" href="/article/new/">New Article</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="site-main {% block main_class %}{% endblock %}">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>DiWiki — a collaborative knowledge base. Content is open for everyone to read and contribute.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

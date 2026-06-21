@@ -1,42 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 {% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'articlestyle.css' %}">
-</head>
+{% block title %}{{ article.title }} — DiWiki{% endblock %}
+{% block main_class %}site-main--article{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/article.css' %}">
+{% endblock %}
 
-<body>
-    <a href="{% url 'edit_article' article.id %}">Edit</a>
-    <div class="page-layout">
-        <div class="left-rail">
-            <a class="logo" href="/">
-                <img src="{% static 'logo.png' %}" alt="Home">
-            </a>
-            <aside class="sections-container">
-                {% for section in sections %}
-                <a href="#section-{{ section.id }}">{{ section.title }}</a>
-                {% endfor %}
-                
-            </aside>
+{% block content %}
+<div class="article-toolbar">
+    <a class="btn btn--secondary btn--sm" href="{% url 'edit_article' article.id %}">Edit article</a>
+</div>
+
+<div class="page-layout">
+    <aside class="left-rail">
+        <nav class="sections-container" aria-label="Table of contents">
+            {% for section in sections %}
+            <a href="#section-{{ section.id }}">{{ section.title }}</a>
+            {% endfor %}
+        </nav>
+    </aside>
+
+    <article class="article-container">
+        <h1>{{ article.title }}</h1>
+
+        <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
+
+        <div class="article-lead">
+            {{ article.description|safe }}
         </div>
 
-        <main class="article-container">
-            <h1>{{ article.title }}</h1>
-
-            <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
-
-            <p>{{ article.description|safe}}</p>
-
-            {% for section in sections %}
-            <h2 id="section-{{ section.id }}">{{ section.title }}</h2>
-            <p>{{ section.text|safe }}</p>
-            {% endfor %}
-        </main>
-    </div>
-</body>
-
-</html>
+        {% for section in sections %}
+        <h2 id="section-{{ section.id }}">{{ section.title }}</h2>
+        <div>{{ section.text|safe }}</div>
+        {% endfor %}
+    </article>
+</div>
+{% endblock %}

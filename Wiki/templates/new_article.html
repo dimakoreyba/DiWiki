@@ -1,139 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 {% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'newarticlestyle.css' %}">
-</head>
+{% block title %}{% if is_edit %}Edit Article{% else %}New Article{% endif %} — DiWiki{% endblock %}
+{% block nav_new %}site-nav__link--active{% endblock %}
+{% block body_class %}form-page{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/form.css' %}">
+{% endblock %}
 
-<body>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+{% block content %}
+<div class="container container--narrow" data-article-link-selector data-article-id="{{ article_id|default:'' }}">
+    <header class="page-header">
+        <h1 class="page-header__title">{% if is_edit %}Edit Article{% else %}Create Article{% endif %}</h1>
+        <p class="page-header__subtitle">
+            {% if is_edit %}
+            Update article content. To link another article, type <code>[[Article Name]]</code> in Description or Short description.
+            {% else %}
+            Fill in the details below to publish a new wiki page. To link another article, type <code>[[Article Name]]</code> in Description or Short description.
+            {% endif %}
+        </p>
+    </header>
 
-        {{ form.as_p }}
-        {{ sections.management_form }}
-        {{ image_form.as_p }}
+    <div class="form-card panel">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-        <div id="sections-container">
+            {{ form.as_p }}
+            {{ sections.management_form }}
+            {{ image_form.as_p }}
 
-            {% for section in sections %}
-            <div class="section-form">
-                <div class="section-header">
-                    <h2>Section</h2>
+            <div id="sections-container">
+                {% for section in sections %}
+                <div class="section-form">
+                    <div class="section-header">
+                        <h2>Section</h2>
+                        <button type="button" class="delete-section-btn">Delete</button>
+                    </div>
 
-                    <button type="button" class="delete-section-btn">
-                        Delete
-                    </button>
+                    {% for field in section %}
+                    {% if field.name != 'DELETE' and field.name != 'id' and field.name != 'article' %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% endif %}
+                    {% endfor %}
                 </div>
-
-                {% for field in section %}
-                {% if field.name != 'DELETE' and field.name != 'id' and field.name != 'article' %}
-                {{ field.label_tag }}
-                {{ field }}
-                {% endif %}
                 {% endfor %}
             </div>
-            {% endfor %}
 
-        </div>
+            <div class="form-actions">
+                <button type="button" id="add-section-btn" class="btn btn--accent">+ Add Section</button>
+                <button type="submit" class="btn btn--primary">{% if is_edit %}Save Changes{% else %}Publish Article{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
 
-        <button type="button" id="add-section-btn">
-            + Add Section
-        </button>
+{% block extra_js %}
+<script src="{% static 'js/article-link-selector.js' %}"></script>
+<script>
+    const addButton = document.getElementById("add-section-btn");
+    const container = document.getElementById("sections-container");
 
-        <button type="submit">
-            Submit
-        </button>
-    </form>
+    function updateDeleteButtons() {
+        const deleteButtons = document.querySelectorAll(".delete-section-btn");
 
-    <script>
-        const addButton = document.getElementById("add-section-btn");
-        const container = document.getElementById("sections-container");
+        deleteButtons.forEach(button => {
+            button.onclick = () => {
+                const forms = document.querySelectorAll(".section-form");
 
-        function updateDeleteButtons() {
+                if (forms.length === 1) {
+                    return;
+                }
 
-            const deleteButtons = document.querySelectorAll(".delete-section-btn");
+                button.closest(".section-form").remove();
+                updateFormIndexes();
+            };
+        });
+    }
 
-            deleteButtons.forEach(button => {
+    function updateFormIndexes() {
+        const forms = document.querySelectorAll(".section-form");
+        const totalForms = document.getElementById("id_sections-TOTAL_FORMS");
 
-                button.onclick = () => {
+        forms.forEach((form, index) => {
+            const fields = form.querySelectorAll("input, textarea, select, label");
 
-                    const forms = document.querySelectorAll(".section-form");
+            fields.forEach(field => {
+                if (field.name) {
+                    field.name = field.name.replace(/sections-\d+-/g, `sections-${index}-`);
+                }
 
-                    // prevent deleting the last remaining form
-                    if (forms.length === 1) {
-                        return;
-                    }
+                if (field.id) {
+                    field.id = field.id.replace(/sections-\d+-/g, `sections-${index}-`);
+                }
 
-                    button.closest(".section-form").remove();
-
-                    updateFormIndexes();
-                };
+                if (field.htmlFor) {
+                    field.htmlFor = field.htmlFor.replace(/sections-\d+-/g, `sections-${index}-`);
+                }
             });
-        }
-
-        function updateFormIndexes() {
-
-            const forms = document.querySelectorAll(".section-form");
-
-            const totalForms = document.getElementById("id_sections-TOTAL_FORMS");
-
-            forms.forEach((form, index) => {
-
-                const fields = form.querySelectorAll("input, textarea, select, label");
-
-                fields.forEach(field => {
-
-                    if (field.name) {
-                        field.name = field.name.replace(/sections-\d+-/g, `sections-${index}-`);
-                    }
-
-                    if (field.id) {
-                        field.id = field.id.replace(/sections-\d+-/g, `sections-${index}-`);
-                    }
-
-                    if (field.htmlFor) {
-                        field.htmlFor = field.htmlFor.replace(/sections-\d+-/g, `sections-${index}-`);
-                    }
-                });
-            });
-
-            totalForms.value = forms.length;
-        }
-
-        addButton.addEventListener("click", () => {
-
-            const totalForms = document.getElementById("id_sections-TOTAL_FORMS");
-
-            const currentFormCount = parseInt(totalForms.value);
-
-            const firstForm = document.querySelector(".section-form");
-
-            const newForm = firstForm.cloneNode(true);
-
-            newForm.innerHTML = newForm.innerHTML.replaceAll(
-                `sections-0-`,
-                `sections-${currentFormCount}-`
-            );
-
-            const inputs = newForm.querySelectorAll("input, textarea");
-
-            inputs.forEach(input => {
-                input.value = "";
-            });
-
-            container.appendChild(newForm);
-
-            totalForms.value = currentFormCount + 1;
-
-            updateDeleteButtons();
         });
 
-        updateDeleteButtons();
-    </script>
-</body>
+        totalForms.value = forms.length;
+    }
 
-</html>
+    addButton.addEventListener("click", () => {
+        const totalForms = document.getElementById("id_sections-TOTAL_FORMS");
+        const currentFormCount = parseInt(totalForms.value);
+        const firstForm = document.querySelector(".section-form");
+        const newForm = firstForm.cloneNode(true);
+
+        newForm.innerHTML = newForm.innerHTML.replaceAll(
+            `sections-0-`,
+            `sections-${currentFormCount}-`
+        );
+
+        const inputs = newForm.querySelectorAll("input, textarea");
+
+        inputs.forEach(input => {
+            input.value = "";
+        });
+
+        container.appendChild(newForm);
+        totalForms.value = currentFormCount + 1;
+        updateDeleteButtons();
+    });
+
+    updateDeleteButtons();
+</script>
+{% endblock %}

@@ -1,45 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 {% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'mainstyle.css' %}">
+{% block title %}DiWiki — Home{% endblock %}
+{% block nav_home %}site-nav__link--active{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/main.css' %}">
+{% endblock %}
 
-</head>
-
-<body>
-    <div class="container">
+{% block content %}
+<div class="container">
+    <div class="home-hero">
         <h1 class="logo">DiWiki</h1>
 
         <div class="actions">
-            <a class="action-button" href="/article/new" id="addBtn">Add Article</a>
-            <a class="action-button" href="/articles/all" id="allBtn">ALL Articles</a>
+            <a class="action-button btn btn--primary" href="/article/new/" id="addBtn">Add Article</a>
+            <a class="action-button btn btn--secondary" href="/articles/all/" id="allBtn">All Articles</a>
         </div>
+    </div>
 
-        <div class="intro">
-            <h2>Welcome</h2>
-            <p>This is your modern wiki homepage.</p>
+    <div class="intro panel">
+        <h2>Welcome</h2>
+        <p>Explore articles, share knowledge, and build a collaborative encyclopedia together.</p>
+    </div>
+
+    <div class="card-grid">
+        {% for article in articles %}
+        <div class="card">
+            <a href="/article/{{ article.id }}/">
+                <div class="card-content">
+                    <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.short_description }}</p>
+                    <p>&#x1F440; Views: {{ article.views }}</p>
+                </div>
+            </a>
         </div>
-
-        <div class="card-grid">
-            {% for article in articles %}
-            <div class="card">
-                <a href="/article/{{ article.id }}">
-                        <div class="card-content">
-                            <img src="{{ article.main_image.source.url }}" alt="{{ article.title }}">
-                            <h3>{{ article.title }}</h3>
-                            <p>{{ article.short_description }}</p>
-                            <p> &#x1F440; Views: {{ article.views }}</p>
-                        </div>
-                        </a>
-                        </div>
-                    {% endfor %}
-            </div>
-        </div>
-        
-</body>
-
-</html>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

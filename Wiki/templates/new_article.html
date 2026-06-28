@@ -22,6 +22,15 @@
     </header>
 
     <div class="form-card panel">
+        {% if form.errors or sections.errors or image_form.errors %}
+        <div class="form-errors panel" role="alert">
+            <p><strong>Please fix the errors below:</strong></p>
+            {{ form.errors }}
+            {{ sections.errors }}
+            {{ image_form.errors }}
+        </div>
+        {% endif %}
+
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
@@ -38,9 +47,13 @@
                     </div>
 
                     {% for field in section %}
-                    {% if field.name != 'DELETE' and field.name != 'id' and field.name != 'article' %}
+                    {% if field.name != 'DELETE' and field.name != 'article' %}
+                    {% if field.is_hidden %}
+                    {{ field }}
+                    {% else %}
                     {{ field.label_tag }}
                     {{ field }}
+                    {% endif %}
                     {% endif %}
                     {% endfor %}
                 </div>

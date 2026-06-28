@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-%n2-0uck&-m%yh-1-$mu@=yweeg46zz_rz9^q42vbuga+wxmk2
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "diwiki-v6rp.onrender.com"
+    "diwiki-v6rp.onrender.com",
+    "127.0.0.1",
+    "localhost",
 ]
 
 

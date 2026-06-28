@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.db.models import Case, IntegerField, Value, When
 from .models import Article
 from .models import Sections
-from .forms import SectionFormSet, ArticleForm, ImageForm
+from .forms import SectionFormSet, EditSectionFormSet, ArticleForm, ImageForm
 import re
 from django.core.paginator import Paginator
 
@@ -124,7 +124,7 @@ def edit_article(request, id):
             request.FILES,
             instance=article.main_image,
         )
-        sections = SectionFormSet(request.POST, instance=article)
+        sections = EditSectionFormSet(request.POST, instance=article)
 
         if form.is_valid() and sections.is_valid() and image_form.is_valid():
             article = save_article_with_sections(
@@ -134,7 +134,7 @@ def edit_article(request, id):
     else:
         form = ArticleForm(instance=article)
         image_form = ImageForm(instance=article.main_image)
-        sections = SectionFormSet(instance=article)
+        sections = EditSectionFormSet(instance=article)
 
     return render(request, "new_article.html", {
         "form": form,
